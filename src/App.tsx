@@ -389,10 +389,12 @@ export default function App() {
       </button>
 
       {/* Footer matching exact design */}
-      <footer className={`w-full relative z-10 mt-auto bg-white/60 backdrop-blur-2xl border-t border-black/5 py-4.5 pb-[calc(18px+env(safe-area-inset-bottom))] text-center text-[13px] font-semibold tracking-[1.5px] text-[#1C1C2E]/50 select-none transition-all duration-300 ${
+      <footer className={`w-full relative z-10 mt-auto bg-white/60 backdrop-blur-2xl border-t border-black/5 py-4 pb-[calc(16px+env(safe-area-inset-bottom))] text-center text-[12.5px] font-semibold tracking-[1.2px] text-[#1C1C2E]/50 select-none transition-all duration-300 flex items-center justify-center gap-2 ${
         isInputFocused ? 'opacity-0 pointer-events-none translate-y-full' : 'opacity-100 translate-y-0'
       }`}>
-        created by <span className="cosmo-gradient">cosmo</span>
+        <span>created by <span className="cosmo-gradient font-bold">cosmo</span></span>
+        <span className="opacity-40">•</span>
+        <span className="text-[12px] font-mono">v2.0</span>
       </footer>
 
       {/* Modals & Drawers */}
