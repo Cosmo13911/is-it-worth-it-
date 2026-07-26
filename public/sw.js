@@ -1,9 +1,13 @@
-const CACHE_NAME = 'is-it-worth-it-v1';
+const CACHE_NAME = 'is-it-worth-it-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png',
+  '/apple-touch-icon-precomposed.png',
   '/src/main.tsx',
   '/src/App.tsx',
   '/src/index.css'

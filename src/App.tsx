@@ -28,6 +28,37 @@ export default function App() {
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
   const [isIOS, setIsIOS] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
+  const [headerHeight, setHeaderHeight] = useState<number>(80);
+
+  // Measure dynamic header height to prevent card overlapping under header on mobile/iOS
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const headerEl = document.querySelector('header');
+      if (headerEl) {
+        const height = headerEl.offsetHeight;
+        if (height > 0) {
+          setHeaderHeight(height);
+        }
+      }
+    };
+
+    updateHeaderHeight();
+    const timer = setTimeout(updateHeaderHeight, 100);
+
+    const headerEl = document.querySelector('header');
+    let observer: ResizeObserver | null = null;
+    if (headerEl && typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(updateHeaderHeight);
+      observer.observe(headerEl);
+    }
+
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => {
+      clearTimeout(timer);
+      if (observer) observer.disconnect();
+      window.removeEventListener('resize', updateHeaderHeight);
+    };
+  }, []);
 
   // Focus and keyboard visibility tracking for Mobile / Safari
   useEffect(() => {
@@ -302,14 +333,17 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="w-full max-w-md mx-auto flex-1 relative z-10 flex flex-col px-4 pt-[78px]">
+      <main
+        className="w-full max-w-md mx-auto flex-1 relative z-10 flex flex-col px-4 transition-[padding-top] duration-200"
+        style={{ paddingTop: `${headerHeight + 14}px` }}
+      >
         {/* Product Cards Stack */}
         <ScrollStack
           useWindowScroll={true}
           itemDistance={16}
           itemScale={0.035}
           itemStackDistance={20}
-          stackPosition="78px"
+          stackPosition={`${headerHeight + 14}px`}
           baseScale={0.78}
         >
           {products.map((product, index) => (

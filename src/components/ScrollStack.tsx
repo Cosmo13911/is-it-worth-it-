@@ -102,7 +102,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     const { scrollTop, containerHeight } = getScrollData();
     const headerHeight = document.querySelector('header')?.offsetHeight || 70;
-    const baseStackPos = Math.max(headerHeight + 12, parsePercentage(stackPosition, containerHeight));
+    const parsedStackPos = parsePercentage(stackPosition, containerHeight);
+    const baseStackPos = parsedStackPos > 0 ? parsedStackPos : headerHeight + 14;
 
     const maxStackVisible = 4; // Max visible stacked header steps
     const stackGap = 46; // Gap in px to reveal the product name/header when stacked
@@ -120,7 +121,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     const pinStarts: number[] = cards.map((card, i) => {
       if (!card) return 0;
       const targetTop = baseStackPos + Math.min(i, maxStackVisible) * stackGap;
-      return initialTops[i] - targetTop;
+      const start = initialTops[i] - targetTop;
+      return i === 0 ? Math.max(0, start) : start;
     });
 
     // Calculate smooth step progress (0 to 1) for each card pinning over previous
