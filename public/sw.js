@@ -1,4 +1,4 @@
-const CACHE_NAME = 'is-it-worth-it-v5';
+const CACHE_NAME = 'is-it-worth-it-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -7,10 +7,7 @@ const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/apple-touch-icon.png',
-  '/apple-touch-icon-precomposed.png',
-  '/src/main.tsx',
-  '/src/App.tsx',
-  '/src/index.css'
+  '/apple-touch-icon-precomposed.png'
 ];
 
 // Install Event
