@@ -81,10 +81,10 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 onClick={onInstallPwaClick}
                 title="ติดตั้งแอป PWA"
-                className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 hover:bg-amber-500/20 active:scale-95 transition-all"
+                aria-label="ติดตั้งแอป PWA"
+                className="p-2 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 hover:bg-amber-500/20 active:scale-95 transition-all flex items-center justify-center"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>ติดตั้งแอป</span>
+                <Download className="w-4 h-4" />
               </button>
             )}
 
@@ -93,7 +93,8 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenHistory}
               title="ประวัติการเทียบราคา"
-              className="relative p-2 rounded-full bg-black/5 text-[#1C1C2E]/70 border border-black/5 hover:bg-black/10 active:scale-95 transition-all"
+              aria-label="ประวัติการเทียบราคา"
+              className="relative p-2 rounded-full bg-black/5 text-[#1C1C2E]/70 border border-black/5 hover:bg-black/10 active:scale-95 transition-all flex items-center justify-center"
             >
               <BookmarkCheck className="w-4 h-4" />
               {historyCount > 0 && (
@@ -108,10 +109,11 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={onResetClick}
-                className="text-[12.5px] font-semibold px-3 py-1.5 rounded-full bg-red-500/10 text-[#E0342A] border border-red-500/15 backdrop-blur-md shadow-xs active:scale-95 active:opacity-60 transition-all flex items-center gap-1"
+                title="ล้างข้อมูล"
+                aria-label="ล้างข้อมูล"
+                className="p-2 rounded-full bg-red-500/10 text-[#E0342A] border border-red-500/15 backdrop-blur-md shadow-xs active:scale-95 active:opacity-60 transition-all flex items-center justify-center"
               >
-                <RefreshCw className="w-3 h-3" />
-                <span>ล้างข้อมูล</span>
+                <RefreshCw className="w-4 h-4" />
               </button>
             )}
           </div>

@@ -2,21 +2,76 @@ import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 
-const svgPath = path.resolve('public/icon.svg');
-const svgBuffer = fs.readFileSync(svgPath);
+// Opaque full-bleed SVG for iOS Apple Touch Icon (NO rounded corners, NO transparent padding)
+const fullBleedSvg = `<svg width="512" height="512" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF9500"/>
+      <stop offset="100%" stop-color="#FF5E3A"/>
+    </linearGradient>
+  </defs>
+  <!-- Full-bleed background rectangle without rx/rounding so iOS handles cropping -->
+  <rect x="0" y="0" width="240" height="240" fill="url(#iconBg)"/>
+  
+  <!-- Scale Pillar & Base -->
+  <rect x="115" y="58" width="10" height="110" rx="5" fill="#FFF"/>
+  <circle cx="120" cy="54" r="9" fill="#FFF"/>
+  <rect x="92" y="164" width="56" height="12" rx="6" fill="#FFF"/>
+  <rect x="104" y="158" width="32" height="10" rx="5" fill="#FFF"/>
+  
+  <!-- Main Crossbar -->
+  <rect x="48" y="66" width="144" height="10" rx="5" fill="#FFF"/>
+  <circle cx="56" cy="71" r="7" fill="#FFF"/>
+  <circle cx="184" cy="71" r="7" fill="#FFF"/>
+  
+  <!-- Left Scale Pan & Strings -->
+  <line x1="48" y1="78" x2="36" y2="112" stroke="#FFF" stroke-width="5" stroke-linecap="round"/>
+  <line x1="64" y1="78" x2="76" y2="112" stroke="#FFF" stroke-width="5" stroke-linecap="round"/>
+  <path d="M28 112 A28 24 0 0 0 84 112" fill="none" stroke="#FFF" stroke-width="7" stroke-linecap="round"/>
+  <line x1="28" y1="112" x2="84" y2="112" stroke="#FFF" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Right Scale Pan & Strings -->
+  <line x1="176" y1="78" x2="164" y2="112" stroke="#FFF" stroke-width="5" stroke-linecap="round"/>
+  <line x1="192" y1="78" x2="204" y2="112" stroke="#FFF" stroke-width="5" stroke-linecap="round"/>
+  <path d="M156 112 A28 24 0 0 0 212 112" fill="none" stroke="#FFF" stroke-width="7" stroke-linecap="round"/>
+  <line x1="156" y1="112" x2="212" y2="112" stroke="#FFF" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Left Weight item -->
+  <circle cx="56" cy="98" r="10" fill="#FFF"/>
+  <rect x="50" y="105" width="12" height="7" rx="3" fill="#FFF"/>
+  <line x1="56" y1="82" x2="56" y2="87" stroke="#FFF" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="40" y1="90" x2="44" y2="94" stroke="#FFF" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="72" y1="90" x2="68" y2="94" stroke="#FFF" stroke-width="3.5" stroke-linecap="round"/>
+  
+  <!-- Right Currency Symbol (฿) -->
+  <text x="184" y="109" text-anchor="middle" font-family="-apple-system, SF Pro Display, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#FFF">฿</text>
+</svg>`;
 
 async function generate() {
-  await sharp(svgBuffer)
+  const fullBleedBuffer = Buffer.from(fullBleedSvg);
+
+  // Generate 180x180 for iOS apple-touch-icon
+  await sharp(fullBleedBuffer)
     .resize(180, 180)
+    .removeAlpha()
     .png()
     .toFile(path.resolve('public/apple-touch-icon.png'));
 
-  await sharp(svgBuffer)
+  // Also precomposed
+  await sharp(fullBleedBuffer)
+    .resize(180, 180)
+    .removeAlpha()
+    .png()
+    .toFile(path.resolve('public/apple-touch-icon-precomposed.png'));
+
+  // Generate 192x192 for Android / PWA
+  await sharp(fullBleedBuffer)
     .resize(192, 192)
     .png()
     .toFile(path.resolve('public/icon-192.png'));
 
-  await sharp(svgBuffer)
+  // Generate 512x512 for Android / PWA
+  await sharp(fullBleedBuffer)
     .resize(512, 512)
     .png()
     .toFile(path.resolve('public/icon-512.png'));
