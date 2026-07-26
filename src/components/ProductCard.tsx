@@ -38,6 +38,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     savingsPercent = Math.round(((worstUnitPrice - unitPrice) / worstUnitPrice) * 100);
   }
 
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const target = e.currentTarget;
+    setTimeout(() => {
+      target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 200);
+  };
+
   const priceInvalid = invalidFields[`${product.id}-price`];
   const amountInvalid = invalidFields[`${product.id}-amount`];
 
@@ -119,6 +126,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             value={product.price}
             data-input-key={`${product.id}-price`}
             onChange={(e) => onUpdate(product.id, { price: e.target.value })}
+            onFocus={handleInputFocus}
             onKeyDown={(e) => onKeyDownPrice(e, index)}
             className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/20"
           />
@@ -138,6 +146,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             value={product.amount}
             data-input-key={`${product.id}-amount`}
             onChange={(e) => onUpdate(product.id, { amount: e.target.value })}
+            onFocus={handleInputFocus}
             onKeyDown={(e) => onKeyDownAmount(e, index)}
             className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/20"
           />

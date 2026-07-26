@@ -27,6 +27,34 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
   const [isIOS, setIsIOS] = useState<boolean>(false);
+  const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
+
+  // Focus and keyboard visibility tracking for Mobile / Safari
+  useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+        setIsInputFocused(true);
+      }
+    };
+
+    const handleFocusOut = () => {
+      setTimeout(() => {
+        const active = document.activeElement;
+        if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA' && active.tagName !== 'SELECT')) {
+          setIsInputFocused(false);
+        }
+      }, 150);
+    };
+
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+    };
+  }, []);
 
   const [history, setHistory] = useState<ComparisonHistoryItem[]>(() => {
     try {
@@ -305,9 +333,7 @@ export default function App() {
         </ScrollStack>
 
         {/* Stack Spacer */}
-        <div id="stackSpacer" className="h-10 block" />
-
-
+        <div id="stackSpacer" className={`transition-all duration-300 ${isInputFocused ? 'h-72' : 'h-10'}`} />
       </main>
 
       {/* Circular Add FAB (+) Button matching exact design */}
@@ -317,7 +343,9 @@ export default function App() {
         onClick={addProduct}
         aria-label="เพิ่มสินค้า"
         title="เพิ่มสินค้า"
-        className="fixed z-30 w-[60px] h-[60px] rounded-full cursor-pointer flex items-center justify-center bg-gradient-to-br from-[#007AFF] to-[#0055B8] text-white border-none shadow-[0_10px_28px_rgba(0,122,255,0.4),0_2px_6px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 transition-all duration-200"
+        className={`fixed z-30 w-[60px] h-[60px] rounded-full cursor-pointer flex items-center justify-center bg-gradient-to-br from-[#007AFF] to-[#0055B8] text-white border-none shadow-[0_10px_28px_rgba(0,122,255,0.4),0_2px_6px_rgba(0,0,0,0.1)] hover:scale-105 active:scale-95 transition-all duration-300 ${
+          isInputFocused ? 'opacity-0 pointer-events-none translate-y-10 scale-75' : 'opacity-100 scale-100 translate-y-0'
+        }`}
         style={{
           right: 'max(20px, calc(50vw - 204px))',
           bottom: 'calc(28px + env(safe-area-inset-bottom))',
@@ -327,7 +355,9 @@ export default function App() {
       </button>
 
       {/* Footer matching exact design */}
-      <footer className="w-full relative z-10 mt-auto bg-white/60 backdrop-blur-2xl border-t border-black/5 py-4.5 pb-[calc(18px+env(safe-area-inset-bottom))] text-center text-[13px] font-semibold tracking-[1.5px] text-[#1C1C2E]/50 select-none">
+      <footer className={`w-full relative z-10 mt-auto bg-white/60 backdrop-blur-2xl border-t border-black/5 py-4.5 pb-[calc(18px+env(safe-area-inset-bottom))] text-center text-[13px] font-semibold tracking-[1.5px] text-[#1C1C2E]/50 select-none transition-all duration-300 ${
+        isInputFocused ? 'opacity-0 pointer-events-none translate-y-full' : 'opacity-100 translate-y-0'
+      }`}>
         created by <span className="cosmo-gradient">cosmo</span>
       </footer>
 
