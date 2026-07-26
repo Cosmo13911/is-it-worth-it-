@@ -1,0 +1,6 @@
+{
+  "name": "คุ้มไหม",
+  "description": "แอปเปรียบเทียบราคาต่อหน่วยเพื่อดูความคุ้มค่าของสินค้า (PWA)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

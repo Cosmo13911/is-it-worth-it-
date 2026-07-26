@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@layer base {
+  html, body {
+    min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: #F4F5F9;
+    font-family: -apple-system, 'SF Pro Text', 'Sarabun', 'Prompt', sans-serif;
+    color: #1C1C2E;
+  }
+
+  /* Hide scrollbars globally while allowing scrolling */
+  html, body, * {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+}
+
+/* Background Blobs */
+.bg-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.45;
+}
+
+.blob-1 {
+  width: 340px;
+  height: 340px;
+  background: #FFE0B2;
+  top: -80px;
+  right: -100px;
+}
+
+.blob-2 {
+  width: 300px;
+  height: 300px;
+  background: #D0E1FD;
+  top: 35%;
+  left: -130px;
+}
+
+.blob-3 {
+  width: 320px;
+  height: 320px;
+  background: #FFD1DC;
+  bottom: -100px;
+  right: -80px;
+}
+
+/* Glassmorphic header & cards */
+.glass-header {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.glass-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.glass-card-best {
+  border-color: rgba(52, 199, 89, 0.7);
+  box-shadow: 0 0 0 2px rgba(52, 199, 89, 0.35), 0 10px 30px rgba(52, 199, 89, 0.12);
+}
+
+.glass-modal {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+}
+
+/* Shake Animation on invalid input */
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+  40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+.animate-shake {
+  animation: shake 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Cosmo gradient text */
+.cosmo-gradient {
+  background: linear-gradient(135deg, #FF9500, #FF5E3A);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 700;
+}
