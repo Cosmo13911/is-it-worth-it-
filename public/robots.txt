@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://is-it-worth.netlify.app/sitemap.xml
