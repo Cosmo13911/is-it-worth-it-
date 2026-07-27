@@ -23,13 +23,41 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   const generateShareText = () => {
     let text = `⚖️ ผลการเทียบราคาต่อหน่วย (จากแอป คุ้มไหม):\n\n`;
+    const validResults = results.filter((r): r is number => r !== null);
+    const minRes = validResults.length >= 2 ? Math.min(...validResults) : null;
+    const maxRes = validResults.length >= 2 ? Math.max(...validResults) : null;
+    const isEqualAll = validResults.length >= 2 && minRes !== null && maxRes !== null && Math.abs(maxRes - minRes) < 0.000001;
+
     products.forEach((p, i) => {
       const res = results[i];
-      const isBest = i === bestIndex;
+      const isThisBest = res !== null && minRes !== null && Math.abs(res - minRes) < 0.000001;
       const resText = res !== null ? `฿${res.toFixed(2)}/หน่วย` : 'ยังไม่ได้ระบุ';
-      const badge = isBest ? '🏆 [คุ้มสุด]' : `   [สินค้า ${i + 1}]`;
+      
+      let badge = `   [สินค้า ${i + 1}]`;
+      if (isThisBest) {
+        if (isEqualAll || validResults.filter((r) => Math.abs(r - minRes) < 0.000001).length > 1) {
+          badge = '⚖️ [เท่ากัน]';
+        } else {
+          badge = '🏆 [คุ้มสุด]';
+        }
+      }
+
       const name = p.name || `สินค้า ${i + 1}`;
-      text += `${badge} ${name}: ราคา ฿${p.price || 0} / ปริมาณ ${p.amount || 0} ➔ ${resText}\n`;
+
+      const multVal = typeof p.multiplier === 'string' ? parseFloat(p.multiplier) : p.multiplier;
+      const mult = !isNaN(multVal) && multVal > 1 ? multVal : 1;
+      const amountVal = parseFloat(p.amount);
+
+      let qtyText = '';
+      if (mult > 1 && !isNaN(amountVal) && amountVal > 0) {
+        qtyText = `แพ็ค ${mult} ชิ้น (ชิ้นละ ${amountVal}) รวม ${mult * amountVal}`;
+      } else if (mult > 1) {
+        qtyText = `แพ็ค ${mult} ชิ้น`;
+      } else {
+        qtyText = `${p.amount || 0}`;
+      }
+
+      text += `${badge} ${name}: ราคา ฿${p.price || 0} / ปริมาณ ${qtyText} ➔ ${resText}\n`;
     });
     text += `\n📲 เทียบราคาฟรีและใช้ออฟไลน์ได้ที่แอป คุ้มไหม (Is It Worth It?)`;
     return text;

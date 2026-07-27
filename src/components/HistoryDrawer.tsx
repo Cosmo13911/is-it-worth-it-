@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComparisonHistoryItem, Product } from '../types';
+import { ComparisonHistoryItem } from '../types';
 import { X, Trash2, ArrowUpRight, BookmarkPlus, ShoppingBag, Calendar } from 'lucide-react';
 
 interface HistoryDrawerProps {

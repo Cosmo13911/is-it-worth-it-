@@ -11,7 +11,8 @@ export interface Product {
   name: string;
   price: string;
   amount: string;
-  multiplier: number;
+  multiplier: number | string;
+  isPack?: boolean;
   unit: UnitType;
   customUnitLabel?: string;
 }

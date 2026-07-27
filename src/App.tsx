@@ -132,7 +132,7 @@ export default function App() {
   }, [history]);
 
   // Helper to focus inputs
-  const focusInput = useCallback((productIndex: number, fieldName: 'price' | 'amount' = 'price') => {
+  const focusInput = useCallback((productIndex: number, fieldName: 'price' | 'amount' | 'multiplier' = 'price') => {
     setTimeout(() => {
       setProducts((currentProducts) => {
         if (currentProducts[productIndex]) {
@@ -156,14 +156,28 @@ export default function App() {
   // Calculate Unit Prices
   const results = products.map((p) => {
     const price = parseFloat(p.price);
-    const amount = parseFloat(p.amount) * (p.multiplier || 1);
-    if (!price || !amount || price < 0 || amount <= 0) return null;
-    return price / amount;
+    const amountVal = parseFloat(p.amount);
+    const multVal = typeof p.multiplier === 'string' ? parseFloat(p.multiplier) : (p.multiplier || 1);
+    const isPack = p.isPack !== undefined ? p.isPack : (!isNaN(multVal) && multVal > 1);
+    const mult = !isNaN(multVal) && multVal > 0 ? multVal : 1;
+
+    let totalAmount = 0;
+    if (!isNaN(amountVal) && amountVal > 0) {
+      totalAmount = isPack ? amountVal * mult : amountVal;
+    } else if (isPack && mult > 0) {
+      totalAmount = mult;
+    }
+
+    if (isNaN(price) || price < 0 || totalAmount <= 0) return null;
+    return price / totalAmount;
   });
 
   const validResults = results.filter((r): r is number => r !== null);
   const minUnitPrice = validResults.length >= 2 ? Math.min(...validResults) : null;
   const maxUnitPrice = validResults.length >= 2 ? Math.max(...validResults) : null;
+  const isEqualAll = validResults.length >= 2 && minUnitPrice !== null && maxUnitPrice !== null && Math.abs(maxUnitPrice - minUnitPrice) < 0.000001;
+  const bestCount = minUnitPrice !== null ? results.filter((r) => r !== null && Math.abs(r - minUnitPrice) < 0.000001).length : 0;
+  const isTiedBest = bestCount > 1;
   const bestIndex = minUnitPrice !== null ? results.indexOf(minUnitPrice) : -1;
 
   // Validate Field
@@ -171,9 +185,18 @@ export default function App() {
     const p = products.find((prod) => prod.id === id);
     if (!p) return false;
 
-    const val = p[field].trim();
+    const val = p[field]?.toString().trim() || '';
     const num = parseFloat(val);
     const key = `${id}-${field}`;
+
+    const multVal = typeof p.multiplier === 'string' ? parseFloat(p.multiplier) : (p.multiplier || 1);
+    const isPack = p.isPack !== undefined ? p.isPack : (!isNaN(multVal) && multVal > 1);
+
+    // For amount, if in pack mode and amount is empty, it's valid (amount defaults to 1 per item, total items = multiplier)
+    if (field === 'amount' && isPack && val === '') {
+      setInvalidFields((prev) => ({ ...prev, [key]: false }));
+      return true;
+    }
 
     if (!val || isNaN(num) || num <= 0) {
       setInvalidFields((prev) => ({ ...prev, [key]: true }));
@@ -236,7 +259,12 @@ export default function App() {
       e.preventDefault();
       const p = products[index];
       if (validateField(p.id, 'price')) {
-        focusInput(index, 'amount');
+        const isPack = p.isPack !== undefined ? p.isPack : false;
+        if (isPack) {
+          focusInput(index, 'multiplier');
+        } else {
+          focusInput(index, 'amount');
+        }
       }
     }
   };
@@ -346,24 +374,31 @@ export default function App() {
           stackPosition={`${headerHeight + 14}px`}
           baseScale={0.78}
         >
-          {products.map((product, index) => (
-            <ScrollStackItem key={product.id}>
-              <ProductCard
-                product={product}
-                index={index}
-                totalProducts={products.length}
-                isBest={index === bestIndex}
-                unitPrice={results[index]}
-                bestUnitPrice={minUnitPrice}
-                worstUnitPrice={maxUnitPrice}
-                onUpdate={updateProduct}
-                onRemove={removeProduct}
-                onKeyDownPrice={handleKeyDownPrice}
-                onKeyDownAmount={handleKeyDownAmount}
-                invalidFields={invalidFields}
-              />
-            </ScrollStackItem>
-          ))}
+          {products.map((product, index) => {
+            const res = results[index];
+            const isThisBest = res !== null && minUnitPrice !== null && Math.abs(res - minUnitPrice) < 0.000001;
+            const isThisEqual = res !== null && minUnitPrice !== null && (isEqualAll || (isThisBest && isTiedBest));
+
+            return (
+              <ScrollStackItem key={product.id}>
+                <ProductCard
+                  product={product}
+                  index={index}
+                  totalProducts={products.length}
+                  isBest={isThisBest}
+                  isEqual={isThisEqual}
+                  unitPrice={res}
+                  bestUnitPrice={minUnitPrice}
+                  worstUnitPrice={maxUnitPrice}
+                  onUpdate={updateProduct}
+                  onRemove={removeProduct}
+                  onKeyDownPrice={handleKeyDownPrice}
+                  onKeyDownAmount={handleKeyDownAmount}
+                  invalidFields={invalidFields}
+                />
+              </ScrollStackItem>
+            );
+          })}
         </ScrollStack>
 
         {/* Stack Spacer */}
@@ -394,7 +429,7 @@ export default function App() {
       }`}>
         <span>created by <span className="cosmo-gradient font-bold">cosmo</span></span>
         <span className="opacity-40">•</span>
-        <span className="text-[12px] font-mono">v2.0</span>
+        <span className="text-[12px] font-mono">v2.3</span>
       </footer>
 
       {/* Modals & Drawers */}

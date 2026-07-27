@@ -1,4 +1,4 @@
-const CACHE_NAME = 'is-it-worth-it-v6';
+const CACHE_NAME = 'is-it-worth-it-v7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

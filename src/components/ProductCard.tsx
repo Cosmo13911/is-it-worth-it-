@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Product } from '../types';
-import { X, Percent } from 'lucide-react';
+import { X, Percent, Package, Scale, Equal } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
   index: number;
   totalProducts: number;
   isBest: boolean;
+  isEqual?: boolean;
   unitPrice: number | null;
   bestUnitPrice: number | null;
   worstUnitPrice: number | null;
@@ -22,6 +23,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   index,
   totalProducts,
   isBest,
+  isEqual = false,
   unitPrice,
   worstUnitPrice,
   onUpdate,
@@ -48,6 +50,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const priceInvalid = invalidFields[`${product.id}-price`];
   const amountInvalid = invalidFields[`${product.id}-amount`];
 
+  // Pack / Multiplier Calculation Logic
+  // Pack mode is active based on explicit product.isPack boolean state or backwards-compatible multiplier > 1
+  const isPackMode = product.isPack !== undefined
+    ? Boolean(product.isPack)
+    : (product.multiplier !== undefined && product.multiplier !== 1 && product.multiplier !== '1' && product.multiplier !== '');
+
+  const multStr = product.multiplier !== undefined ? String(product.multiplier) : '';
+  const packQtyNum = parseFloat(multStr);
+
+  const perPieceAmountNum = parseFloat(product.amount);
+  let totalAmountCalcText = '';
+  if (isPackMode) {
+    const validQty = !isNaN(packQtyNum) && packQtyNum > 0 ? packQtyNum : null;
+    if (validQty !== null && !isNaN(perPieceAmountNum) && perPieceAmountNum > 0) {
+      const totalAmount = validQty * perPieceAmountNum;
+      totalAmountCalcText = `${totalAmount.toLocaleString()}`;
+    } else if (validQty !== null) {
+      totalAmountCalcText = `${validQty} ชิ้น`;
+    } else if (!isNaN(perPieceAmountNum) && perPieceAmountNum > 0) {
+      totalAmountCalcText = `${perPieceAmountNum.toLocaleString()}`;
+    }
+  }
+
   return (
     <div
       className={`card glass-card rounded-[22px] overflow-hidden relative ${
@@ -56,7 +81,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     >
       {/* Card Header */}
       <div className="card-head flex items-center justify-between px-4 py-3 border-b border-black/5">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <div
             className={`badge-num w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs ${
               isBest
@@ -73,9 +98,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               value={product.name}
               onChange={(e) => onUpdate(product.id, { name: e.target.value })}
               onBlur={() => setShowNameEdit(false)}
-              onKeyDown={(e) => e.key === 'Enter' && setShowNameEdit(false)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  setShowNameEdit(false);
+                  const priceInput = document.querySelector(`[data-input-key="${product.id}-price"]`) as HTMLInputElement | null;
+                  if (priceInput) priceInput.focus();
+                }
+              }}
+              enterKeyHint="next"
               autoFocus
-              className="text-sm font-semibold text-[#1C1C2E] bg-white/80 border border-black/10 rounded-md px-2 py-0.5 outline-none w-32"
+              className="text-sm font-semibold text-[#1C1C2E] bg-white/80 border border-black/10 rounded-md px-2 py-0.5 outline-none w-28"
             />
           ) : (
             <button
@@ -86,13 +119,53 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <span>{product.name || `สินค้า ${index + 1}`}</span>
             </button>
           )}
+
+          {/* Pack Mode Toggle Button (Icon next to Product Name) */}
+          <button
+            type="button"
+            onClick={() => {
+              if (isPackMode) {
+                onUpdate(product.id, { isPack: false, multiplier: 1 });
+              } else {
+                onUpdate(product.id, { isPack: true, multiplier: '' });
+                setTimeout(() => {
+                  const multInput = document.querySelector(`[data-input-key="${product.id}-multiplier"]`) as HTMLInputElement | null;
+                  if (multInput) multInput.focus();
+                }, 50);
+              }
+            }}
+            className={`px-2 py-1 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
+              isPackMode
+                ? 'bg-amber-500 text-white shadow-xs'
+                : 'bg-black/5 hover:bg-black/10 text-black/50 hover:text-black/80'
+            }`}
+            title={isPackMode ? "ยกเลิกโหมดแพ็ค (สลับเป็นชิ้นเดียว)" : "คำนวณเป็นแพ็ค / หลายชิ้น"}
+          >
+            <Package className="w-3.5 h-3.5" />
+            <span className="text-[10.5px] font-semibold">
+              {isPackMode ? 'แพ็ค' : '+ แพ็ค'}
+            </span>
+          </button>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Best Value Badge */}
+          {/* Best Value / Equal Badge */}
           {isBest && (
-            <span className="badge-best text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/15 text-[#1E7A38] border border-emerald-500/25 backdrop-blur-xs flex items-center gap-1">
-              ✓ คุ้มสุด
+            <span
+              className={`badge-best text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 ${
+                isEqual
+                  ? 'bg-blue-500/15 text-[#0066CC] border border-blue-500/25'
+                  : 'bg-emerald-500/15 text-[#1E7A38] border border-emerald-500/25'
+              }`}
+            >
+              {isEqual ? (
+                <>
+                  <Scale className="w-3.5 h-3.5" />
+                  <span>เท่ากัน</span>
+                </>
+              ) : (
+                '✓ คุ้มสุด'
+              )}
             </span>
           )}
 
@@ -111,64 +184,193 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Input Cells */}
-      <div className="card-inputs grid grid-cols-2">
-        {/* Price Cell */}
-        <div
-          className={`input-cell px-4 py-3 border-r border-black/5 border-b-2 transition-all ${
-            priceInvalid ? 'border-b-[#FF3B30] bg-red-500/5 animate-shake' : 'border-b-transparent'
-          }`}
-        >
-          <label className="text-[11.5px] font-medium text-black/50 block">ราคา (฿)</label>
-          <input
-            type="text"
-            inputMode="decimal"
-            placeholder="0"
-            value={product.price}
-            data-input-key={`${product.id}-price`}
-            onChange={(e) => onUpdate(product.id, { price: e.target.value })}
-            onFocus={handleInputFocus}
-            onKeyDown={(e) => onKeyDownPrice(e, index)}
-            className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/20"
-          />
-        </div>
+      <div className="card-inputs">
+        {!isPackMode ? (
+          /* Standard Single Item View (2 Columns) */
+          <div>
+            <div className="grid grid-cols-2">
+              {/* Price Cell */}
+              <div
+                className={`input-cell px-4 py-3 border-r border-black/5 border-b-2 transition-all ${
+                  priceInvalid ? 'border-b-[#FF3B30] bg-red-500/5 animate-shake' : 'border-b-transparent'
+                }`}
+              >
+                <label className="text-[11.5px] font-medium text-black/50 block">ราคา (฿)</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  enterKeyHint="next"
+                  autoComplete="off"
+                  placeholder="0"
+                  value={product.price}
+                  data-input-key={`${product.id}-price`}
+                  onChange={(e) => onUpdate(product.id, { price: e.target.value })}
+                  onFocus={handleInputFocus}
+                  onKeyDown={(e) => onKeyDownPrice(e, index)}
+                  className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/20"
+                />
+              </div>
 
-        {/* Amount Cell */}
-        <div
-          className={`input-cell px-4 py-3 border-b-2 transition-all ${
-            amountInvalid ? 'border-b-[#FF3B30] bg-red-500/5 animate-shake' : 'border-b-transparent'
-          }`}
-        >
-          <label className="text-[11.5px] font-medium text-black/50 block">ปริมาณ</label>
-          <input
-            type="text"
-            inputMode="decimal"
-            placeholder="0"
-            value={product.amount}
-            data-input-key={`${product.id}-amount`}
-            onChange={(e) => onUpdate(product.id, { amount: e.target.value })}
-            onFocus={handleInputFocus}
-            onKeyDown={(e) => onKeyDownAmount(e, index)}
-            className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/20"
-          />
-        </div>
+              {/* Amount Cell */}
+              <div
+                className={`input-cell px-4 py-3 border-b-2 transition-all ${
+                  amountInvalid ? 'border-b-[#FF3B30] bg-red-500/5 animate-shake' : 'border-b-transparent'
+                }`}
+              >
+                <label className="text-[11.5px] font-medium text-black/50 block">ปริมาณ</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  enterKeyHint={index < totalProducts - 1 ? 'next' : 'done'}
+                  autoComplete="off"
+                  placeholder="0"
+                  value={product.amount}
+                  data-input-key={`${product.id}-amount`}
+                  onChange={(e) => onUpdate(product.id, { amount: e.target.value })}
+                  onFocus={handleInputFocus}
+                  onKeyDown={(e) => onKeyDownAmount(e, index)}
+                  className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/20"
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Pack / Multi-piece View (2 Rows with auto-calculated total) */
+          <div className="divide-y divide-black/5">
+            <div className="grid grid-cols-2">
+              {/* Price Cell */}
+              <div
+                className={`input-cell px-4 py-3 border-r border-black/5 border-b-2 transition-all ${
+                  priceInvalid ? 'border-b-[#FF3B30] bg-red-500/5 animate-shake' : 'border-b-transparent'
+                }`}
+              >
+                <label className="text-[11.5px] font-medium text-black/50 block">ราคารวม (฿)</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  enterKeyHint="next"
+                  autoComplete="off"
+                  placeholder="0"
+                  value={product.price}
+                  data-input-key={`${product.id}-price`}
+                  onChange={(e) => onUpdate(product.id, { price: e.target.value })}
+                  onFocus={handleInputFocus}
+                  onKeyDown={(e) => onKeyDownPrice(e, index)}
+                  className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/20"
+                />
+              </div>
+
+              {/* Multiplier / Quantity Cell */}
+              <div className="input-cell px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11.5px] font-medium text-black/50 block">จำนวนในแพ็ค (ชิ้น)</label>
+                  <button
+                    type="button"
+                    onClick={() => onUpdate(product.id, { isPack: false, multiplier: 1 })}
+                    className="text-[10px] font-semibold text-black/40 hover:text-red-500 transition-colors"
+                    title="สลับเป็นชิ้นเดียว"
+                  >
+                    ✕ ชิ้นเดียว
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  enterKeyHint="next"
+                  autoComplete="off"
+                  placeholder="ระบุ"
+                  value={product.multiplier !== undefined ? String(product.multiplier) : ''}
+                  data-input-key={`${product.id}-multiplier`}
+                  onChange={(e) => onUpdate(product.id, { multiplier: e.target.value })}
+                  onFocus={handleInputFocus}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const amountInput = document.querySelector(`[data-input-key="${product.id}-amount"]`) as HTMLInputElement | null;
+                      if (amountInput) amountInput.focus();
+                    }
+                  }}
+                  className="w-full text-2xl font-semibold bg-transparent border-none outline-none mt-0.5 text-amber-600 placeholder:text-black/20"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 bg-black/[0.02]">
+              {/* Amount Per Piece Cell */}
+              <div
+                className={`input-cell px-4 py-2.5 border-r border-black/5 border-b-2 transition-all ${
+                  amountInvalid ? 'border-b-[#FF3B30] bg-red-500/5 animate-shake' : 'border-b-transparent'
+                }`}
+              >
+                <label className="text-[11px] font-medium text-black/50 block">ปริมาณต่อ 1 ชิ้น</label>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  enterKeyHint={index < totalProducts - 1 ? 'next' : 'done'}
+                  autoComplete="off"
+                  placeholder="ระบุ (ถ้ามี)"
+                  value={product.amount}
+                  data-input-key={`${product.id}-amount`}
+                  onChange={(e) => onUpdate(product.id, { amount: e.target.value })}
+                  onFocus={handleInputFocus}
+                  onKeyDown={(e) => onKeyDownAmount(e, index)}
+                  className="w-full text-lg font-semibold bg-transparent border-none outline-none mt-0.5 text-[#1C1C2E] placeholder:text-black/25"
+                />
+              </div>
+
+              {/* Total Amount (Auto calculated) */}
+              <div className="input-cell px-4 py-2.5 flex flex-col justify-center">
+                <span className="text-[11px] font-medium text-black/50 block">ปริมาณรวมทั้งหมด</span>
+                <div className="text-sm font-bold text-[#1C1C2E] mt-1 flex items-center gap-1">
+                  {totalAmountCalcText ? (
+                    <span className="text-base font-bold font-mono text-[#1C1C2E]">
+                      {totalAmountCalcText}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-black/35 font-normal">-</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Result Section */}
       {unitPrice !== null && (
         <div
           className={`card-result flex items-center justify-between px-4 py-2.5 border-t border-black/5 ${
-            isBest ? 'bg-emerald-500/12 text-[#1E7A38]' : 'bg-white/50 text-[#1C1C2E]'
+            isBest
+              ? isEqual
+                ? 'bg-blue-500/10 text-[#0055B8]'
+                : 'bg-emerald-500/12 text-[#1E7A38]'
+              : 'bg-white/50 text-[#1C1C2E]'
           }`}
         >
           <div>
-            <span className="text-xs text-black/55 block">ราคาต่อหน่วย</span>
-            {isBest && savingsPercent !== null && savingsPercent > 0 && (
+            <span className="text-xs text-black/55 block">
+              {isEqual ? 'ราคาต่อหน่วย (เท่ากัน)' : 'ราคาต่อหน่วย'}
+            </span>
+            {isBest && !isEqual && savingsPercent !== null && savingsPercent > 0 && (
               <span className="inline-flex items-center gap-0.5 text-[10.5px] font-bold text-emerald-700 bg-emerald-500/20 px-1.5 py-0.2 rounded-md mt-0.5">
                 <Percent className="w-2.5 h-2.5" /> ประหยัดกว่า {savingsPercent}%
               </span>
             )}
+            {isEqual && (
+              <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-blue-700 bg-blue-500/20 px-1.5 py-0.5 rounded-md mt-0.5">
+                <Scale className="w-3 h-3" /> ราคาเท่ากันพอดี
+              </span>
+            )}
           </div>
-          <span className={`text-lg font-bold ${isBest ? 'text-[#1E7A38]' : 'text-[#1C1C2E]'}`}>
+          <span
+            className={`text-lg font-bold ${
+              isBest
+                ? isEqual
+                  ? 'text-[#0055B8]'
+                  : 'text-[#1E7A38]'
+                : 'text-[#1C1C2E]'
+            }`}
+          >
             ฿{unitPrice < 0.01 ? unitPrice.toFixed(4) : unitPrice.toFixed(2)}
           </span>
         </div>
