@@ -1,8 +1,9 @@
-const CACHE_NAME = 'is-it-worth-it-v7';
+const CACHE_NAME = 'is-it-worth-it-v9';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/favicon.ico',
   '/icon.svg',
   '/icon-192.png',
   '/icon-512.png',

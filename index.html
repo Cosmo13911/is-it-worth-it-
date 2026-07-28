@@ -85,16 +85,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="คุ้มไหม" />
     
+    <!-- Favicons & Touch Icons (Absolute URLs for Google Favicon Crawler) -->
+    <link rel="shortcut icon" href="https://is-it-worth.netlify.app/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="https://is-it-worth.netlify.app/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="192x192" href="https://is-it-worth.netlify.app/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="https://is-it-worth.netlify.app/icon-512.png" />
+    <link rel="icon" type="image/svg+xml" href="https://is-it-worth.netlify.app/icon.svg" />
+    <link rel="apple-touch-icon" href="https://is-it-worth.netlify.app/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://is-it-worth.netlify.app/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="https://is-it-worth.netlify.app/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="https://is-it-worth.netlify.app/apple-touch-icon.png" />
+    <link rel="apple-touch-icon-precomposed" href="https://is-it-worth.netlify.app/apple-touch-icon-precomposed.png" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="shortcut icon" href="/icon-192.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
     
     <!-- Google Fonts for Thai & English Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -102,7 +104,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body class="bg-[#F4F5F9] text-[#1C1C2E] antialiased min-h-screen flex flex-col select-none overflow-x-hidden">
-    <div id="root"></div>
+    <div id="root">
+      <header class="p-4 text-center">
+        <h1 class="text-xl font-bold">คุ้มไหม — Is It Worth It?</h1>
+        <p class="text-sm opacity-70">แอปเปรียบเทียบราคาต่อหน่วย คำนวณความคุ้มค่า</p>
+      </header>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

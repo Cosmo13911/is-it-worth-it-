@@ -445,7 +445,7 @@ export default function App() {
       }`}>
         <span>created by <span className="cosmo-gradient font-bold">cosmo</span></span>
         <span className="opacity-40">•</span>
-        <span className="text-[12px] font-mono">v2.3</span>
+        <span className="text-[12px] font-mono">v2.4</span>
       </footer>
 
       {/* Modals & Drawers */}
