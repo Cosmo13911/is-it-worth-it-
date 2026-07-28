@@ -36,6 +36,13 @@
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   position: relative;
+  transition: z-index 0.15s ease, transform 0.2s ease;
+}
+
+/* Elevate card above all others when an input inside it is focused */
+.scroll-stack-card:focus-within,
+.scroll-stack-card:has(:focus) {
+  z-index: 100 !important;
 }
 
 .scroll-stack-end {

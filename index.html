@@ -8,14 +8,17 @@
     <meta name="description" content="แอปเปรียบเทียบราคาต่อหน่วยเพื่อดูความคุ้มค่าของสินค้า คำนวณปริมาณ ราคา และส่วนลด ค้นหาสินค้าที่คุ้มค่าที่สุดได้ทันที ใช้งานง่าย รวดเร็ว รองรับการใช้งานออฟไลน์" />
     <meta name="keywords" content="คุ้มไหม, เปรียบเทียบราคา, คำนวณความคุ้มค่า, คำนวณราคาต่อหน่วย, unit price calculator, เปรียบเทียบราคาสินค้า, คุ้มค่าที่สุด, Is It Worth It, คุ้มไหมแอป" />
     <meta name="author" content="cosmo" />
+    <meta name="application-name" content="คุ้มไหม" />
     <meta name="robots" content="index, follow" />
     <meta name="google-site-verification" content="31b7fd1ecc1be2ec" />
+    <link rel="canonical" href="https://is-it-worth.netlify.app/" />
     
     <!-- Open Graph / Facebook / LINE -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="คุ้มไหม — Is It Worth It? แอปเปรียบเทียบราคาต่อหน่วย" />
     <meta property="og:description" content="แอปเปรียบเทียบราคาต่อหน่วยเพื่อดูความคุ้มค่าของสินค้า คำนวณความคุ้มค่าได้ทันที ใช้งานง่าย รวดเร็ว รองรับออฟไลน์" />
-    <meta property="og:image" content="/icon-512.png" />
+    <meta property="og:image" content="https://is-it-worth.netlify.app/icon-512.png" />
+    <meta property="og:url" content="https://is-it-worth.netlify.app/" />
     <meta property="og:site_name" content="คุ้มไหม" />
     <meta property="og:locale" content="th_TH" />
 
@@ -23,24 +26,57 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="คุ้มไหม — Is It Worth It? แอปเปรียบเทียบราคาต่อหน่วย" />
     <meta name="twitter:description" content="แอปเปรียบเทียบราคาต่อหน่วยเพื่อดูความคุ้มค่าของสินค้า คำนวณความคุ้มค่าได้ทันที" />
-    <meta name="twitter:image" content="/icon-512.png" />
+    <meta name="twitter:image" content="https://is-it-worth.netlify.app/icon-512.png" />
 
-    <!-- JSON-LD Structured Data for Search Engines -->
+    <!-- JSON-LD Structured Data for Search Engines (Site Name & Web App) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "คุ้มไหม (Is It Worth It)",
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "All",
-      "description": "แอปเปรียบเทียบราคาต่อหน่วยเพื่อดูความคุ้มค่าของสินค้า คำนวณส่วนลดและปริมาณอย่างแม่นยำ",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "THB"
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "คุ้มไหม",
+        "alternateName": ["คุ้มไหม — Is It Worth It?", "Is It Worth It", "คุ้มไหมแอป"],
+        "url": "https://is-it-worth.netlify.app/",
+        "author": {
+          "@type": "Person",
+          "name": "cosmo"
+        },
+        "creator": {
+          "@type": "Person",
+          "name": "cosmo"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "cosmo",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://is-it-worth.netlify.app/icon-512.png"
+          }
+        }
       },
-      "inLanguage": "th"
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "คุ้มไหม (Is It Worth It)",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "All",
+        "description": "แอปเปรียบเทียบราคาต่อหน่วยเพื่อดูความคุ้มค่าของสินค้า คำนวณส่วนลดและปริมาณอย่างแม่นยำ",
+        "author": {
+          "@type": "Person",
+          "name": "cosmo"
+        },
+        "creator": {
+          "@type": "Person",
+          "name": "cosmo"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "THB"
+        },
+        "inLanguage": "th"
+      }
+    ]
     </script>
     
     <meta name="theme-color" content="#FF9500" />
@@ -50,8 +86,10 @@
     <meta name="apple-mobile-web-app-title" content="คุ้มไหม" />
     
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="shortcut icon" href="/icon-192.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon.png" />

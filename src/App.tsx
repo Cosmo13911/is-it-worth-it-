@@ -229,9 +229,16 @@ export default function App() {
       }
     }
 
+    // Find smallest available default name "สินค้า N" to avoid duplicates
+    const existingNames = new Set(products.map((p) => p.name.trim()));
+    let newNum = products.length + 1;
+    while (existingNames.has(`สินค้า ${newNum}`)) {
+      newNum++;
+    }
+
     const newProduct: Product = {
       id: nextId,
-      name: `สินค้า ${products.length + 1}`,
+      name: `สินค้า ${newNum}`,
       price: '',
       amount: '',
       multiplier: 1,
@@ -251,7 +258,16 @@ export default function App() {
 
   const removeProduct = (id: number) => {
     if (products.length <= 2) return;
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    setProducts((prev) => {
+      const filtered = prev.filter((p) => p.id !== id);
+      return filtered.map((p, index) => {
+        // If product name is empty or matches default pattern "สินค้า X", update to match new index "สินค้า (index + 1)"
+        if (!p.name.trim() || /^\s*สินค้า\s*\d+\s*$/.test(p.name)) {
+          return { ...p, name: `สินค้า ${index + 1}` };
+        }
+        return p;
+      });
+    });
   };
 
   const handleKeyDownPrice = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {

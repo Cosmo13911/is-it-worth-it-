@@ -73,17 +73,55 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     }
   }
 
+  // Auto focus the first empty/unfilled field on the card
+  const focusFirstEmptyField = (targetIsPack: boolean, overrideMultiplierValue?: string | number) => {
+    setTimeout(() => {
+      const hasPrice = Boolean(product.price && String(product.price).trim() !== '');
+      const hasAmount = Boolean(product.amount && String(product.amount).trim() !== '');
+
+      let targetKey = 'price';
+
+      if (!hasPrice) {
+        targetKey = 'price';
+      } else if (targetIsPack) {
+        const multVal = overrideMultiplierValue !== undefined
+          ? String(overrideMultiplierValue).trim()
+          : (product.multiplier !== undefined ? String(product.multiplier).trim() : '');
+        const hasMultiplier = Boolean(multVal !== '' && multVal !== '1');
+
+        if (!hasMultiplier) {
+          targetKey = 'multiplier';
+        } else if (!hasAmount) {
+          targetKey = 'amount';
+        } else {
+          targetKey = 'multiplier';
+        }
+      } else {
+        if (!hasAmount) {
+          targetKey = 'amount';
+        } else {
+          targetKey = 'price';
+        }
+      }
+
+      const input = document.querySelector(`[data-input-key="${product.id}-${targetKey}"]`) as HTMLInputElement | null;
+      if (input) {
+        input.focus();
+      }
+    }, 50);
+  };
+
   return (
     <div
-      className={`card glass-card rounded-[22px] overflow-hidden relative ${
+      className={`card glass-card rounded-[22px] overflow-hidden relative transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:shadow-xl ${
         isBest ? 'best glass-card-best' : ''
       }`}
     >
       {/* Card Header */}
       <div className="card-head flex items-center justify-between px-4 py-3 border-b border-black/5">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
           <div
-            className={`badge-num w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs ${
+            className={`badge-num w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs shrink-0 ${
               isBest
                 ? 'bg-gradient-to-br from-[#4CD964] to-[#28A745] shadow-green-500/20'
                 : 'bg-gradient-to-br from-[#4A90E2] to-[#0066CC] shadow-blue-500/20'
@@ -108,33 +146,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               }}
               enterKeyHint="next"
               autoFocus
-              className="text-sm font-semibold text-[#1C1C2E] bg-white/80 border border-black/10 rounded-md px-2 py-0.5 outline-none w-28"
+              className="text-sm font-semibold text-[#1C1C2E] bg-white/80 border border-black/10 rounded-md px-2 py-0.5 outline-none w-28 shrink-0"
             />
           ) : (
             <button
               type="button"
               onClick={() => setShowNameEdit(true)}
-              className="card-name text-[15px] font-semibold text-[#1C1C2E] hover:text-blue-600 transition-colors flex items-center gap-1"
+              className="card-name text-[15px] font-semibold text-[#1C1C2E] hover:text-blue-600 transition-colors flex items-center gap-1 truncate"
             >
-              <span>{product.name || `สินค้า ${index + 1}`}</span>
+              <span className="truncate">{product.name || `สินค้า ${index + 1}`}</span>
             </button>
           )}
 
-          {/* Pack Mode Toggle Button (Icon next to Product Name) */}
+          {/* Pack Mode Toggle Button (Shifted to right) */}
           <button
             type="button"
             onClick={() => {
               if (isPackMode) {
                 onUpdate(product.id, { isPack: false, multiplier: 1 });
+                focusFirstEmptyField(false, 1);
               } else {
                 onUpdate(product.id, { isPack: true, multiplier: '' });
-                setTimeout(() => {
-                  const multInput = document.querySelector(`[data-input-key="${product.id}-multiplier"]`) as HTMLInputElement | null;
-                  if (multInput) multInput.focus();
-                }, 50);
+                focusFirstEmptyField(true, '');
               }
             }}
-            className={`px-2 py-1 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
+            className={`ml-auto shrink-0 px-2 py-1 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
               isPackMode
                 ? 'bg-amber-500 text-white shadow-xs'
                 : 'bg-black/5 hover:bg-black/10 text-black/50 hover:text-black/80'
@@ -266,7 +302,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   <label className="text-[11.5px] font-medium text-black/50 block">จำนวนในแพ็ค (ชิ้น)</label>
                   <button
                     type="button"
-                    onClick={() => onUpdate(product.id, { isPack: false, multiplier: 1 })}
+                    onClick={() => {
+                      onUpdate(product.id, { isPack: false, multiplier: 1 });
+                      focusFirstEmptyField(false, 1);
+                    }}
                     className="text-[10px] font-semibold text-black/40 hover:text-red-500 transition-colors"
                     title="สลับเป็นชิ้นเดียว"
                   >
